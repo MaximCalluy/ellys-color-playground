@@ -152,7 +152,6 @@ button {
   min-height: 0;
   display: flex;
   flex-direction: row;
-  overflow: hidden;
 }
 
 /* ── Sidebar wrapper ── */
