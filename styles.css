@@ -135,19 +135,25 @@ button {
    ============================================================ */
 
 .app {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "sidebar header"
-    "sidebar main";
+  display: flex;
+  flex-direction: column;
   height: 100%;
   background-color: var(--color-bg-default);
 }
 
-.header        { grid-area: header; }
-.sidebar-wrapper { grid-area: sidebar; }
-.main          { grid-area: main; }
+/* ── Header spans full width above the body ── */
+.header {
+  flex-shrink: 0;
+}
+
+/* ── Body: sidebar + main side by side ── */
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
 
 /* ── Sidebar wrapper ── */
 .sidebar-wrapper {
@@ -189,12 +195,12 @@ button {
 .main {
   flex: 1;
   min-width: 0;
-  height: 100%;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: 24px 24px 40px 12px;
+  padding: 0 24px 40px 12px;
   position: relative;
 }
 
@@ -206,7 +212,7 @@ button {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 0 0 12px;
+  padding: 24px 24px 12px 12px;
   flex-shrink: 0;
   position: relative;
 }
@@ -1198,22 +1204,20 @@ input[type="range"]:hover::-moz-range-thumb {
     overflow: auto;
   }
 
-  /* ── App layout: single column, header first ── */
+  /* ── App layout: single column ── */
   .app {
-    display: flex;
-    flex-direction: column;
     height: auto;
     overflow: visible;
   }
 
-  .header        { order: 1; }
-  .sidebar-wrapper { order: 2; }
-  .main          { order: 3; }
+  .app-body {
+    flex-direction: column;
+    overflow: visible;
+  }
 
   /* ── Header: H1 only, no mascot, no action buttons ── */
   .header {
     padding: 24px 16px 0;
-    flex-direction: row;
     align-items: center;
     justify-content: flex-start;
   }
@@ -1242,7 +1246,7 @@ input[type="range"]:hover::-moz-range-thumb {
 
   /* ── Main: full width, no fixed height ── */
   .main {
-    height: auto;
+    min-height: unset;
     overflow: visible;
     padding: 16px 16px 40px;
     gap: 16px;
