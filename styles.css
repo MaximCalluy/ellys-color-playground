@@ -410,6 +410,29 @@ button {
   white-space: nowrap;
 }
 
+/* Inline name editor */
+.color-item__name-input {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  line-height: var(--line-height-base);
+  color: var(--color-text-dark);
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--color-brand-500);
+  border-radius: 0;
+  padding: 0;
+  width: 100%;
+  outline: none;
+}
+.color-item__name-input::selection {
+  background: var(--color-brand-100);
+}
+.icon-btn--edit.is-active {
+  background: var(--color-brand-100);
+  color: var(--color-brand-500);
+}
+
 .color-item__actions {
   display: flex;
   gap: 8px;

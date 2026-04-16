@@ -227,6 +227,7 @@ function escHtml(str) {
 let state = {
   palette:    [],
   selectedId: null,
+  editingId:  null,
   filters: { fail: true, 'aa-large': true, aa: true, aaa: true },
 };
 
@@ -289,23 +290,36 @@ function renderPalette() {
 }
 
 function colorItemHTML(color) {
-  const sel = state.selectedId === color.id;
-  return `<li class="color-item${sel ? ' is-selected' : ''}"
+  const sel     = state.selectedId === color.id;
+  const editing = state.editingId  === color.id;
+
+  const nameHTML = editing
+    ? `<input class="color-item__name-input"
+               type="text"
+               value="${escHtml(color.name)}"
+               maxlength="30"
+               data-id="${color.id}"
+               aria-label="Rename colour"
+               spellcheck="false">`
+    : `<span class="color-item__name">${escHtml(color.name)}</span>`;
+
+  return `<li class="color-item${sel ? ' is-selected' : ''}${editing ? ' is-editing' : ''}"
              data-id="${color.id}"
-             tabindex="0"
+             tabindex="${editing ? -1 : 0}"
              role="option"
              aria-selected="${sel}">
-    <div class="color-item__container" aria-hidden="true">
+    <div class="color-item__container">
       <div class="color-item__swatch" style="background:${color.hex};"></div>
       <div class="color-item__info">
-        <span class="color-item__name">${escHtml(color.name)}</span>
+        ${nameHTML}
         <span class="color-item__hex">${color.hex.toUpperCase()}</span>
       </div>
     </div>
     <div class="color-item__actions" role="group" aria-label="Actions for ${escHtml(color.name)}">
-      <button class="icon-btn icon-btn--edit"
+      <button class="icon-btn icon-btn--edit${editing ? ' is-active' : ''}"
               data-id="${color.id}"
-              aria-label="Edit ${escHtml(color.name)}">${ICON_EDIT}</button>
+              aria-label="${editing ? 'Save name' : 'Edit ' + escHtml(color.name)}"
+              aria-pressed="${editing}">${ICON_EDIT}</button>
       <button class="icon-btn icon-btn--delete"
               data-id="${color.id}"
               aria-label="Delete ${escHtml(color.name)}">${ICON_TRASH}</button>
@@ -584,6 +598,29 @@ function handleSliderInput() {
   renderMatrix();
 }
 
+// ── Edit colour name ──
+function handleStartEdit(id) {
+  state.editingId = id;
+  renderPalette();
+  const input = document.querySelector(`.color-item__name-input[data-id="${id}"]`);
+  if (input) { input.focus(); input.select(); }
+}
+
+function handleSaveEdit(id, rawValue) {
+  const idx  = state.palette.findIndex(c => c.id === id);
+  if (idx === -1) return;
+  const name = rawValue.trim() || state.palette[idx].name;
+  state.palette[idx].name = name;
+  state.editingId = null;
+  renderAll();
+  announce(`Renamed to ${name}`);
+}
+
+function handleCancelEdit() {
+  state.editingId = null;
+  renderPalette();
+}
+
 // ── Copy hex ──
 async function handleCopyHex() {
   const hex = document.getElementById('preview-hex').textContent;
@@ -728,22 +765,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (deleteBtn) {
         e.stopPropagation();
+        if (state.editingId) handleCancelEdit();
         handleDeleteColor(deleteBtn.dataset.id);
       } else if (editBtn) {
         e.stopPropagation();
-        handleSelectColor(editBtn.dataset.id);
-      } else if (item) {
+        const id = editBtn.dataset.id;
+        if (state.editingId === id) {
+          // Clicking pencil again while editing — save
+          const input = document.querySelector('.color-item__name-input');
+          handleSaveEdit(id, input ? input.value : '');
+        } else {
+          handleStartEdit(id);
+        }
+      } else if (item && !e.target.closest('.color-item__name-input')) {
+        if (state.editingId) {
+          const input = document.querySelector('.color-item__name-input');
+          handleSaveEdit(state.editingId, input ? input.value : '');
+        }
         handleSelectColor(item.dataset.id);
       }
     });
 
     paletteList.addEventListener('keydown', e => {
+      // Input field keyboard handling
+      if (e.target.classList.contains('color-item__name-input')) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSaveEdit(e.target.dataset.id, e.target.value);
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          handleCancelEdit();
+        }
+        return;
+      }
+      // Colour item keyboard handling
       if (e.key !== 'Enter' && e.key !== ' ') return;
       const item = e.target.closest('.color-item');
       if (item && e.target === item) {
         e.preventDefault();
         handleSelectColor(item.dataset.id);
       }
+    });
+
+    // Save on blur (clicking outside the input)
+    paletteList.addEventListener('focusout', e => {
+      if (!e.target.classList.contains('color-item__name-input')) return;
+      const id = e.target.dataset.id;
+      const val = e.target.value;
+      // Small delay so click events on buttons fire before we save
+      setTimeout(() => {
+        if (state.editingId === id) handleSaveEdit(id, val);
+      }, 150);
     });
   }
 
