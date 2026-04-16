@@ -248,14 +248,9 @@ function loadFromStorage() {
       if (Array.isArray(saved) && saved.length > 0) {
         state.palette    = saved;
         state.selectedId = saved[0].id;
-        return;
       }
     }
   } catch (_) { /* ignore malformed storage */ }
-
-  // Fall back to defaults
-  state.palette    = DEFAULT_PALETTE.map(c => ({ ...c }));
-  state.selectedId = state.palette[0].id;
 }
 
 function saveToStorage() {
