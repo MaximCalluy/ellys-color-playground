@@ -1280,6 +1280,14 @@ input[type="range"]:hover::-moz-range-thumb {
     width: 100%;
   }
 
+  /* ── Cell meta: stack ratio + badge vertically on mobile ── */
+  .matrix-cell__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    padding: 3px 4px;
+  }
+
   /* ── Filter chips: allow wrapping ── */
   .filter-chips {
     gap: 8px;
