@@ -780,11 +780,13 @@ function handleSavePalette() {
   renderSavedPalettes();
   announce(`"${label}" saved`);
 
-  const btn = document.getElementById('save-btn');
-  if (!btn) return;
-  const orig = btn.textContent;
-  btn.textContent = 'Saved!';
-  setTimeout(() => { btn.textContent = orig; }, 2000);
+  ['save-btn', 'save-btn-mobile'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = 'Saved!';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  });
 }
 
 // ── Load saved palette ──
@@ -1006,13 +1008,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const copyBtn = document.getElementById('copy-hex-btn');
   if (copyBtn) copyBtn.addEventListener('click', handleCopyHex);
 
-  /* ── Header actions ── */
-  const exportBtn    = document.getElementById('export-btn');
-  const saveBtn      = document.getElementById('save-btn');
-  const newPaletteBtn = document.getElementById('new-palette-btn');
-  if (exportBtn)     exportBtn.addEventListener('click', handleExport);
-  if (saveBtn)       saveBtn.addEventListener('click', handleSavePalette);
-  if (newPaletteBtn) newPaletteBtn.addEventListener('click', handleNewPalette);
+  /* ── Header actions (desktop) + mobile duplicates ── */
+  const exportBtn        = document.getElementById('export-btn');
+  const saveBtn          = document.getElementById('save-btn');
+  const exportBtnMobile  = document.getElementById('export-btn-mobile');
+  const saveBtnMobile    = document.getElementById('save-btn-mobile');
+  const newPaletteBtn    = document.getElementById('new-palette-btn');
+  if (exportBtn)       exportBtn.addEventListener('click', handleExport);
+  if (saveBtn)         saveBtn.addEventListener('click', handleSavePalette);
+  if (exportBtnMobile) exportBtnMobile.addEventListener('click', handleExport);
+  if (saveBtnMobile)   saveBtnMobile.addEventListener('click', handleSavePalette);
+  if (newPaletteBtn)   newPaletteBtn.addEventListener('click', handleNewPalette);
 
   /* ── Color picker button — keyboard support ── */
   const pickerBtn = document.querySelector('.color-picker-btn');

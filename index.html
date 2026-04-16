@@ -21,6 +21,34 @@
   <div class="app">
 
     <!-- ========================================================
+         Header (direct child of .app so mobile can reorder it)
+         ======================================================== -->
+    <header class="header">
+      <div class="header__brand">
+        <img class="header__mascot"
+             src="assets/mascot.png"
+             alt=""
+             aria-hidden="true"
+             width="126"
+             height="154"
+             loading="eager">
+        <h1 class="t-h1">Elly's Color Playground</h1>
+      </div>
+      <div class="header__actions">
+        <button id="export-btn"
+                class="btn btn--secondary"
+                type="button">
+          Export
+        </button>
+        <button id="save-btn"
+                class="btn btn--primary"
+                type="button">
+          Save palette
+        </button>
+      </div>
+    </header>
+
+    <!-- ========================================================
          Sidebar
          ======================================================== -->
     <aside class="sidebar-wrapper" aria-label="Colour palette sidebar">
@@ -45,6 +73,16 @@
           <p id="palette-empty" class="palette-empty" hidden>
             No colours yet — add one below.
           </p>
+
+          <!-- Mobile-only: Export + Save palette buttons -->
+          <div class="palette-actions-mobile" aria-hidden="true">
+            <button id="export-btn-mobile"
+                    class="btn btn--secondary"
+                    type="button">Export</button>
+            <button id="save-btn-mobile"
+                    class="btn btn--primary"
+                    type="button">Save palette</button>
+          </div>
         </section>
 
         <hr class="sidebar-divider" aria-hidden="true">
@@ -118,37 +156,6 @@
          Main content
          ======================================================== -->
     <main id="main" class="main">
-
-      <!-- Header -->
-      <header class="header">
-        <div class="header__brand">
-          <!--
-            Decorative mascot illustration.
-            NOTE: This image URL comes from the Figma asset server
-            and expires after 7 days. Replace with a local asset.
-          -->
-          <img class="header__mascot"
-               src="assets/mascot.png"
-               alt=""
-               aria-hidden="true"
-               width="126"
-               height="154"
-               loading="eager">
-          <h1 class="t-h1">Elly's Color Playground</h1>
-        </div>
-        <div class="header__actions">
-          <button id="export-btn"
-                  class="btn btn--secondary"
-                  type="button">
-            Export
-          </button>
-          <button id="save-btn"
-                  class="btn btn--primary"
-                  type="button">
-            Save palette
-          </button>
-        </div>
-      </header>
 
       <!-- ======================================================
            Card: Colour editor

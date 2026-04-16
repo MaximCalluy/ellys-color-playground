@@ -135,11 +135,19 @@ button {
    ============================================================ */
 
 .app {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
   height: 100%;
   background-color: var(--color-bg-default);
 }
+
+.header        { grid-area: header; }
+.sidebar-wrapper { grid-area: sidebar; }
+.main          { grid-area: main; }
 
 /* ── Sidebar wrapper ── */
 .sidebar-wrapper {
@@ -1173,21 +1181,52 @@ input[type="range"]:hover::-moz-range-thumb {
 }
 
 /* ============================================================
-   Responsive — smaller screens
+   Mobile palette actions row (hidden on desktop)
    ============================================================ */
 
-@media (max-width: 960px) {
+.palette-actions-mobile {
+  display: none;
+}
+
+/* ============================================================
+   Responsive — mobile (≤ 768px)
+   ============================================================ */
+
+@media (max-width: 768px) {
   html, body {
     height: auto;
     overflow: auto;
   }
 
+  /* ── App layout: single column, header first ── */
   .app {
+    display: flex;
     flex-direction: column;
     height: auto;
     overflow: visible;
   }
 
+  .header        { order: 1; }
+  .sidebar-wrapper { order: 2; }
+  .main          { order: 3; }
+
+  /* ── Header: H1 only, no mascot, no action buttons ── */
+  .header {
+    padding: 24px 16px 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .header__mascot {
+    display: none;
+  }
+
+  .header__actions {
+    display: none;
+  }
+
+  /* ── Sidebar: full width, no fixed height ── */
   .sidebar-wrapper {
     height: auto;
     overflow: visible;
@@ -1196,31 +1235,55 @@ input[type="range"]:hover::-moz-range-thumb {
 
   .sidebar {
     width: 100%;
-    border-radius: 16px;
+    border-radius: 24px;
     flex: unset;
+    gap: 24px;
   }
 
+  /* ── Main: full width, no fixed height ── */
   .main {
     height: auto;
     overflow: visible;
     padding: 16px 16px 40px;
+    gap: 16px;
   }
 
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+  /* ── Mobile Export + Save palette buttons inside palette section ── */
+  .palette-actions-mobile {
+    display: flex;
+    gap: 8px;
+    width: 100%;
   }
 
-  .header__mascot {
-    display: none;
+  .palette-actions-mobile .btn {
+    flex: 1;
   }
 
+  /* ── Cards: full width, smaller radius ── */
   .card {
     border-radius: 16px;
+    gap: 24px;
   }
 
+  /* ── Colour items: full width ── */
+  .color-item {
+    width: 100%;
+  }
+
+  /* ── Saved palette items: full width ── */
+  .saved-palette-item {
+    width: 100%;
+  }
+
+  /* ── Matrix: only the scroll region scrolls, card stays full-width ── */
   .matrix-scroll {
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  /* ── Filter chips: allow wrapping ── */
+  .filter-chips {
+    gap: 8px;
   }
 }
