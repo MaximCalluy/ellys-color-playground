@@ -4,8 +4,9 @@
    Constants
    ============================================================ */
 
-const STORAGE_KEY = 'elly-playground-v1';
-const MAX_PALETTE = 8;
+const STORAGE_KEY        = 'elly-playground-v1';
+const SAVED_PALETTES_KEY = 'elly-saved-palettes-v1';
+const MAX_PALETTE        = 8;
 
 const SHADE_STEPS = [
   { step: 50,  l: 96 },
@@ -229,6 +230,10 @@ let state = {
   selectedId: null,
   editingId:  null,
   filters: { fail: true, 'aa-large': true, aa: true, aaa: true },
+  savedPalettes:         [],
+  activeSavedPaletteId:  null,
+  savedPaletteEditingId: null,
+  paletteCounter:        0,
 };
 
 /* ============================================================
@@ -255,6 +260,26 @@ function loadFromStorage() {
 
 function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.palette));
+}
+
+function loadSavedPalettesFromStorage() {
+  try {
+    const raw = localStorage.getItem(SAVED_PALETTES_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved && Array.isArray(saved.palettes)) {
+        state.savedPalettes   = saved.palettes;
+        state.paletteCounter  = saved.counter || 0;
+      }
+    }
+  } catch (_) { /* ignore malformed storage */ }
+}
+
+function saveSavedPalettesToStorage() {
+  localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify({
+    palettes: state.savedPalettes,
+    counter:  state.paletteCounter,
+  }));
 }
 
 /* ============================================================
@@ -323,6 +348,65 @@ function colorItemHTML(color) {
       <button class="icon-btn icon-btn--delete"
               data-id="${color.id}"
               aria-label="Delete ${escHtml(color.name)}">${ICON_TRASH}</button>
+    </div>
+  </li>`;
+}
+
+/* ============================================================
+   Render — Saved palettes sidebar section
+   ============================================================ */
+
+function renderSavedPalettes() {
+  const list  = document.getElementById('saved-palettes-list');
+  const empty = document.getElementById('saved-palettes-empty');
+  if (!list) return;
+
+  if (state.savedPalettes.length === 0) {
+    list.innerHTML = '';
+    if (empty) empty.hidden = false;
+  } else {
+    if (empty) empty.hidden = true;
+    list.innerHTML = state.savedPalettes.map(savedPaletteItemHTML).join('');
+  }
+}
+
+function savedPaletteItemHTML(sp) {
+  const isActive  = state.activeSavedPaletteId  === sp.id;
+  const isEditing = state.savedPaletteEditingId === sp.id;
+
+  const nameHTML = isEditing
+    ? `<input class="saved-palette__name-input"
+               type="text"
+               value="${escHtml(sp.name)}"
+               maxlength="30"
+               data-id="${sp.id}"
+               aria-label="Rename palette"
+               spellcheck="false">`
+    : `<span class="saved-palette__name">${escHtml(sp.name)}</span>`;
+
+  const swatches = sp.colors.slice(0, 8).map(c =>
+    `<div class="saved-palette__swatch" style="background:${c.hex};" title="${c.hex}"></div>`
+  ).join('');
+
+  return `<li class="saved-palette-item${isActive ? ' is-active' : ''}"
+              data-id="${sp.id}"
+              tabindex="0"
+              role="button"
+              aria-label="Load ${escHtml(sp.name)}">
+    <div class="saved-palette-item__header">
+      <div class="saved-palette-item__name-group">
+        ${nameHTML}
+        <button class="icon-btn icon-btn--edit${isEditing ? ' is-active' : ''}"
+                data-saved-edit-id="${sp.id}"
+                aria-label="${isEditing ? 'Save palette name' : 'Rename ' + escHtml(sp.name)}"
+                aria-pressed="${isEditing}">${ICON_EDIT}</button>
+      </div>
+      <button class="icon-btn icon-btn--delete"
+              data-saved-delete-id="${sp.id}"
+              aria-label="Delete ${escHtml(sp.name)}">${ICON_TRASH}</button>
+    </div>
+    <div class="saved-palette-item__swatches" aria-hidden="true">
+      ${swatches}
     </div>
   </li>`;
 }
@@ -492,6 +576,7 @@ function renderAll() {
   renderPalette();
   renderColorEditor();
   renderMatrix();
+  renderSavedPalettes();
 }
 
 /* ============================================================
@@ -663,13 +748,74 @@ function handleExport() {
 
 // ── Save palette ──
 function handleSavePalette() {
-  saveToStorage();
+  if (state.palette.length === 0) {
+    announce('Add colours to your palette before saving');
+    return;
+  }
+  state.paletteCounter++;
+  const id     = 'sp' + Date.now();
+  const name   = 'Palette ' + state.paletteCounter;
+  const colors = state.palette.map(c => ({ ...c }));
+  state.savedPalettes.push({ id, name, colors });
+  state.activeSavedPaletteId = id;
+  saveSavedPalettesToStorage();
+  renderSavedPalettes();
+  announce(`Saved as "${name}"`);
+
   const btn = document.getElementById('save-btn');
   if (!btn) return;
   const orig = btn.textContent;
   btn.textContent = 'Saved!';
-  announce('Palette saved to browser');
   setTimeout(() => { btn.textContent = orig; }, 2000);
+}
+
+// ── Load saved palette ──
+function handleLoadSavedPalette(id) {
+  const sp = state.savedPalettes.find(p => p.id === id);
+  if (!sp) return;
+  state.palette    = sp.colors.map(c => ({ ...c }));
+  state.selectedId = state.palette.length > 0 ? state.palette[0].id : null;
+  state.editingId  = null;
+  state.activeSavedPaletteId = id;
+  saveToStorage();
+  renderAll();
+  announce(`"${sp.name}" loaded`);
+}
+
+// ── Delete saved palette ──
+function handleDeleteSavedPalette(id) {
+  const idx = state.savedPalettes.findIndex(p => p.id === id);
+  if (idx === -1) return;
+  const name = state.savedPalettes[idx].name;
+  state.savedPalettes.splice(idx, 1);
+  if (state.activeSavedPaletteId === id) state.activeSavedPaletteId = null;
+  saveSavedPalettesToStorage();
+  renderSavedPalettes();
+  announce(`"${name}" deleted`);
+}
+
+// ── Edit saved palette name ──
+function handleStartSavedPaletteEdit(id) {
+  state.savedPaletteEditingId = id;
+  renderSavedPalettes();
+  const input = document.querySelector(`.saved-palette__name-input[data-id="${id}"]`);
+  if (input) { input.focus(); input.select(); }
+}
+
+function handleSaveSavedPaletteEdit(id, rawValue) {
+  const idx = state.savedPalettes.findIndex(p => p.id === id);
+  if (idx === -1) return;
+  const name = rawValue.trim() || state.savedPalettes[idx].name;
+  state.savedPalettes[idx].name = name;
+  state.savedPaletteEditingId = null;
+  saveSavedPalettesToStorage();
+  renderSavedPalettes();
+  announce(`Renamed to "${name}"`);
+}
+
+function handleCancelSavedPaletteEdit() {
+  state.savedPaletteEditingId = null;
+  renderSavedPalettes();
 }
 
 // ── Filter change ──
@@ -751,6 +897,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Restore or apply defaults
   loadFromStorage();
+  loadSavedPalettesFromStorage();
 
   // First render
   renderAll();
@@ -861,4 +1008,64 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Filters ── */
   const filterBar = document.getElementById('filter-bar');
   if (filterBar) filterBar.addEventListener('change', handleFilterChange);
+
+  /* ── Saved palettes list — event delegation ── */
+  const savedList = document.getElementById('saved-palettes-list');
+  if (savedList) {
+    savedList.addEventListener('click', e => {
+      const deleteBtn = e.target.closest('[data-saved-delete-id]');
+      const editBtn   = e.target.closest('[data-saved-edit-id]');
+      const item      = e.target.closest('.saved-palette-item');
+
+      if (deleteBtn) {
+        e.stopPropagation();
+        if (state.savedPaletteEditingId) handleCancelSavedPaletteEdit();
+        handleDeleteSavedPalette(deleteBtn.dataset.savedDeleteId);
+      } else if (editBtn) {
+        e.stopPropagation();
+        const id = editBtn.dataset.savedEditId;
+        if (state.savedPaletteEditingId === id) {
+          const input = document.querySelector(`.saved-palette__name-input[data-id="${id}"]`);
+          handleSaveSavedPaletteEdit(id, input ? input.value : '');
+        } else {
+          handleStartSavedPaletteEdit(id);
+        }
+      } else if (item && !e.target.closest('.saved-palette__name-input') && !e.target.closest('.icon-btn')) {
+        if (state.savedPaletteEditingId) {
+          const input = document.querySelector('.saved-palette__name-input');
+          handleSaveSavedPaletteEdit(state.savedPaletteEditingId, input ? input.value : '');
+        }
+        handleLoadSavedPalette(item.dataset.id);
+      }
+    });
+
+    savedList.addEventListener('keydown', e => {
+      if (e.target.classList.contains('saved-palette__name-input')) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSaveSavedPaletteEdit(e.target.dataset.id, e.target.value);
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          handleCancelSavedPaletteEdit();
+        }
+        return;
+      }
+      // Load palette on Enter/Space on the item itself
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const item = e.target.closest('.saved-palette-item');
+      if (item && e.target === item) {
+        e.preventDefault();
+        handleLoadSavedPalette(item.dataset.id);
+      }
+    });
+
+    savedList.addEventListener('focusout', e => {
+      if (!e.target.classList.contains('saved-palette__name-input')) return;
+      const id  = e.target.dataset.id;
+      const val = e.target.value;
+      setTimeout(() => {
+        if (state.savedPaletteEditingId === id) handleSaveSavedPaletteEdit(id, val);
+      }, 150);
+    });
+  }
 });

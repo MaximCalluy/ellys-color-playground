@@ -1067,6 +1067,95 @@ input[type="range"]:hover::-moz-range-thumb {
 }
 
 /* ============================================================
+   Saved palette items
+   ============================================================ */
+
+.saved-palettes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.saved-palette-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.15s, border-color 0.15s;
+  list-style: none;
+}
+.saved-palette-item:hover {
+  background: var(--color-bg-default);
+}
+.saved-palette-item.is-active {
+  background: var(--color-brand-100);
+  border-color: var(--color-brand-500);
+}
+
+.saved-palette-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.saved-palette-item__name-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.saved-palette__name {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  line-height: var(--line-height-base);
+  color: var(--color-text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saved-palette__name-input {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  line-height: var(--line-height-base);
+  color: var(--color-text-dark);
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--color-brand-500);
+  border-radius: 0;
+  padding: 0;
+  min-width: 0;
+  width: 100%;
+  outline: none;
+}
+.saved-palette__name-input::selection {
+  background: var(--color-brand-100);
+}
+
+.saved-palette-item__swatches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.saved-palette__swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
    Responsive — smaller screens
    ============================================================ */
 
