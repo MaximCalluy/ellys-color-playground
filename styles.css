@@ -479,14 +479,6 @@ button {
   justify-content: space-between;
 }
 
-/* Small button variant — used next to section headings */
-.btn--sm {
-  height: 28px;
-  min-height: 28px;
-  padding: 0 10px;
-  font-size: var(--font-size-xs);
-  border-radius: 6px;
-}
 
 /* ── Add color section ── */
 .add-color-row {
