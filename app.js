@@ -752,15 +752,28 @@ function handleSavePalette() {
     announce('Add colours to your palette before saving');
     return;
   }
-  state.paletteCounter++;
-  const id     = 'sp' + Date.now();
-  const name   = 'Palette ' + state.paletteCounter;
+
   const colors = state.palette.map(c => ({ ...c }));
-  state.savedPalettes.push({ id, name, colors });
-  state.activeSavedPaletteId = id;
+  let label;
+
+  const existingIdx = state.savedPalettes.findIndex(p => p.id === state.activeSavedPaletteId);
+
+  if (existingIdx !== -1) {
+    // Update the active saved palette in place
+    state.savedPalettes[existingIdx].colors = colors;
+    label = state.savedPalettes[existingIdx].name;
+  } else {
+    // No active saved palette — create a new one
+    state.paletteCounter++;
+    const id = 'sp' + Date.now();
+    label    = 'Palette ' + state.paletteCounter;
+    state.savedPalettes.push({ id, name: label, colors });
+    state.activeSavedPaletteId = id;
+  }
+
   saveSavedPalettesToStorage();
   renderSavedPalettes();
-  announce(`Saved as "${name}"`);
+  announce(`"${label}" saved`);
 
   const btn = document.getElementById('save-btn');
   if (!btn) return;
