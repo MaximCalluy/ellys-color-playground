@@ -20,33 +20,8 @@
 
   <div class="app">
 
-    <!-- ========================================================
-         Header (direct child of .app so mobile can reorder it)
-         ======================================================== -->
-    <header class="header">
-      <div class="header__brand">
-        <img class="header__mascot"
-             src="assets/mascot.png"
-             alt=""
-             aria-hidden="true"
-             width="126"
-             height="154"
-             loading="eager">
-        <h1 class="t-h1">Elly's Color Playground</h1>
-      </div>
-      <div class="header__actions">
-        <button id="export-btn"
-                class="btn btn--secondary"
-                type="button">
-          Export
-        </button>
-        <button id="save-btn"
-                class="btn btn--primary"
-                type="button">
-          Save palette
-        </button>
-      </div>
-    </header>
+    <!-- Mobile-only H1 above the sidebar -->
+    <h1 class="mobile-title t-h1" aria-hidden="true">Elly's Color Playground</h1>
 
     <!-- ========================================================
          Body (sidebar + main side by side)
@@ -158,6 +133,28 @@
          Main content
          ======================================================== -->
     <main id="main" class="main">
+
+      <!-- Header -->
+      <header class="header">
+        <div class="header__brand">
+          <img class="header__mascot"
+               src="assets/mascot.png"
+               alt=""
+               aria-hidden="true"
+               width="126"
+               height="154"
+               loading="eager">
+          <h1 class="t-h1">Elly's Color Playground</h1>
+        </div>
+        <div class="header__actions">
+          <button id="export-btn"
+                  class="btn btn--secondary"
+                  type="button">Export</button>
+          <button id="save-btn"
+                  class="btn btn--primary"
+                  type="button">Save palette</button>
+        </div>
+      </header>
 
       <!-- ======================================================
            Card: Colour editor

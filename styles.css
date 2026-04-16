@@ -141,9 +141,9 @@ button {
   background-color: var(--color-bg-default);
 }
 
-/* ── Header spans full width above the body ── */
-.header {
-  flex-shrink: 0;
+/* Mobile-only H1 — hidden on desktop */
+.mobile-title {
+  display: none;
 }
 
 /* ── Body: sidebar + main side by side ── */
@@ -200,7 +200,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: 0 24px 40px 12px;
+  padding: 24px 24px 40px 12px;
   position: relative;
 }
 
@@ -212,7 +212,7 @@ button {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 24px 24px 12px 12px;
+  padding: 0 0 12px;
   flex-shrink: 0;
   position: relative;
 }
@@ -1215,18 +1215,13 @@ input[type="range"]:hover::-moz-range-thumb {
     overflow: visible;
   }
 
-  /* ── Header: H1 only, no mascot, no action buttons ── */
-  .header {
+  /* ── Mobile H1 shown, desktop header hidden ── */
+  .mobile-title {
+    display: block;
     padding: 24px 16px 0;
-    align-items: center;
-    justify-content: flex-start;
   }
 
-  .header__mascot {
-    display: none;
-  }
-
-  .header__actions {
+  .header {
     display: none;
   }
 
