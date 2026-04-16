@@ -435,7 +435,7 @@ button {
 
 .color-item__actions {
   display: flex;
-  gap: 8px;
+  gap: 16px;
   flex-shrink: 0;
 }
 
