@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elly's Color Playground</title>
+  <meta name="description" content="Interactive colour palette tool for composing and testing WCAG contrast accessibility.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Skip link — first focusable element on the page -->
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- Polite aria-live region for status announcements -->
+  <div id="live-region"
+       class="sr-only"
+       aria-live="polite"
+       aria-atomic="true"></div>
+
+  <div class="app">
+
+    <!-- ========================================================
+         Sidebar
+         ======================================================== -->
+    <aside class="sidebar-wrapper" aria-label="Colour palette sidebar">
+      <div class="sidebar">
+
+        <!-- Section: Your palette -->
+        <section class="sidebar-section" aria-labelledby="palette-heading">
+          <h2 id="palette-heading" class="t-label-caps">Your palette</h2>
+
+          <ul id="palette-list"
+              role="listbox"
+              aria-labelledby="palette-heading"
+              aria-multiselectable="false">
+            <!-- Colour items injected by app.js -->
+          </ul>
+
+          <p id="palette-empty" class="palette-empty" hidden>
+            No colours yet — add one below.
+          </p>
+        </section>
+
+        <hr class="sidebar-divider" aria-hidden="true">
+
+        <!-- Section: Add colour -->
+        <section class="sidebar-section" aria-labelledby="add-heading">
+          <h2 id="add-heading" class="t-label-caps">Add colour</h2>
+
+          <div class="add-color-row">
+
+            <!-- Native colour picker trigger -->
+            <button class="color-picker-btn"
+                    type="button"
+                    aria-label="Open native colour picker">
+              <span id="picker-icon" aria-hidden="true"></span>
+              <input type="color"
+                     id="native-picker"
+                     value="#000000"
+                     tabindex="-1"
+                     aria-hidden="true">
+            </button>
+
+            <!-- Hex text input -->
+            <label for="hex-input" class="sr-only">Hex colour value</label>
+            <input type="text"
+                   id="hex-input"
+                   class="text-input"
+                   placeholder="#000000"
+                   maxlength="7"
+                   autocomplete="off"
+                   spellcheck="false"
+                   aria-describedby="input-error">
+
+            <button id="add-btn"
+                    class="btn btn--primary"
+                    type="button">
+              Add
+            </button>
+
+          </div>
+
+          <!-- Inline error — assertive so it's announced immediately -->
+          <p id="input-error"
+             class="input-error"
+             role="alert"
+             aria-live="assertive"></p>
+
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- ========================================================
+         Main content
+         ======================================================== -->
+    <main id="main" class="main">
+
+      <!-- Header -->
+      <header class="header">
+        <div class="header__brand">
+          <!--
+            Decorative mascot illustration.
+            NOTE: This image URL comes from the Figma asset server
+            and expires after 7 days. Replace with a local asset.
+          -->
+          <img class="header__mascot"
+               src="assets/mascot.png"
+               alt=""
+               aria-hidden="true"
+               width="126"
+               height="154"
+               loading="eager">
+          <h1 class="t-h1">Elly's Color Playground</h1>
+        </div>
+        <div class="header__actions">
+          <button id="export-btn"
+                  class="btn btn--secondary"
+                  type="button">
+            Export
+          </button>
+          <button id="save-btn"
+                  class="btn btn--primary"
+                  type="button">
+            Save palette
+          </button>
+        </div>
+      </header>
+
+      <!-- ======================================================
+           Card: Colour editor
+           ====================================================== -->
+      <article class="card" aria-labelledby="editor-heading">
+
+        <!-- Card header (always visible) -->
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 id="editor-heading" class="t-h2">Color editor</h2>
+            <p id="editor-subtitle"
+               class="card-subtitle"
+               aria-live="polite"
+               aria-atomic="true"></p>
+          </div>
+          <button id="copy-hex-btn"
+                  class="btn btn--secondary"
+                  type="button"
+                  aria-label="Copy current hex value to clipboard">
+            Copy hex
+          </button>
+        </div>
+
+        <!-- Empty state (shown when no colour is selected) -->
+        <div id="editor-empty" class="editor-empty" hidden>
+          <p>Select a colour from your palette to start editing.</p>
+        </div>
+
+        <!-- Active editor (shown when a colour is selected) -->
+        <div id="editor-active" hidden>
+
+          <!-- Colour preview row -->
+          <div class="color-preview">
+            <div id="preview-swatch"
+                 class="color-preview__swatch"
+                 aria-hidden="true"></div>
+            <div class="color-preview__values">
+              <p id="preview-hex"
+                 class="color-preview__hex"
+                 aria-live="off"
+                 aria-label="Hex value"></p>
+              <p id="preview-hsl"
+                 class="color-preview__hsl"
+                 aria-live="off"
+                 aria-label="HSL value"></p>
+            </div>
+          </div>
+
+          <!-- HSL sliders -->
+          <div id="hsl-sliders"
+               class="hsl-sliders"
+               role="group"
+               aria-label="Adjust hue, saturation and lightness">
+
+            <div class="slider-row">
+              <label for="slider-hue" class="slider-label">Hue</label>
+              <div class="slider-track-wrap">
+                <input type="range"
+                       id="slider-hue"
+                       class="slider--hue"
+                       min="0"
+                       max="360"
+                       value="197"
+                       aria-valuetext="197 degrees">
+              </div>
+              <span id="value-hue"
+                    class="slider-value"
+                    aria-live="polite"
+                    aria-atomic="true">197°</span>
+            </div>
+
+            <div class="slider-row">
+              <label for="slider-saturation" class="slider-label">Saturation</label>
+              <div class="slider-track-wrap">
+                <input type="range"
+                       id="slider-saturation"
+                       class="slider--saturation"
+                       min="0"
+                       max="100"
+                       value="100"
+                       aria-valuetext="100 percent">
+              </div>
+              <span id="value-saturation"
+                    class="slider-value"
+                    aria-live="polite"
+                    aria-atomic="true">100%</span>
+            </div>
+
+            <div class="slider-row">
+              <label for="slider-lightness" class="slider-label">Lightness</label>
+              <div class="slider-track-wrap">
+                <input type="range"
+                       id="slider-lightness"
+                       class="slider--lightness"
+                       min="0"
+                       max="100"
+                       value="31"
+                       aria-valuetext="31 percent">
+              </div>
+              <span id="value-lightness"
+                    class="slider-value"
+                    aria-live="polite"
+                    aria-atomic="true">31%</span>
+            </div>
+
+          </div>
+
+          <!-- Generated shades -->
+          <section class="shades-section" aria-labelledby="shades-heading">
+            <h3 id="shades-heading" class="t-label-caps">Generated shades</h3>
+            <div id="shade-strip"
+                 class="shade-strip"
+                 aria-label="Colour shades from 50 to 950"></div>
+          </section>
+
+        </div>
+        <!-- /#editor-active -->
+
+      </article>
+
+      <!-- ======================================================
+           Card: Contrast matrix
+           ====================================================== -->
+      <article class="card" aria-labelledby="matrix-heading">
+
+        <!-- Card header -->
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 id="matrix-heading" class="t-h2">Contrast matrix</h2>
+            <p class="card-subtitle">
+              Text colour (row) on background colour (column)
+            </p>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div id="filter-bar"
+             class="filter-bar"
+             role="group"
+             aria-labelledby="filter-heading">
+
+          <p id="filter-heading" class="t-label-caps">Show</p>
+
+          <ul class="filter-chips" role="list">
+
+            <li>
+              <label class="chip">
+                <input type="checkbox" class="chip__input" id="filter-all" checked>
+                <span class="chip__box">
+                  <span class="chip__checkmark"></span>
+                </span>
+                <span class="chip__label">All</span>
+              </label>
+            </li>
+
+            <li>
+              <label class="chip">
+                <input type="checkbox" class="chip__input" id="filter-fail" checked>
+                <span class="chip__box">
+                  <span class="chip__checkmark"></span>
+                </span>
+                <span class="chip__label">Fail</span>
+                <span class="chip__score">&lt;&nbsp;3:1</span>
+              </label>
+            </li>
+
+            <li>
+              <label class="chip">
+                <input type="checkbox" class="chip__input" id="filter-aa-large" checked>
+                <span class="chip__box">
+                  <span class="chip__checkmark"></span>
+                </span>
+                <span class="chip__label">AA Large</span>
+                <span class="chip__score">≥&nbsp;3:1&nbsp;·&nbsp;large/bold</span>
+              </label>
+            </li>
+
+            <li>
+              <label class="chip">
+                <input type="checkbox" class="chip__input" id="filter-aa" checked>
+                <span class="chip__box">
+                  <span class="chip__checkmark"></span>
+                </span>
+                <span class="chip__label">AA</span>
+                <span class="chip__score">≥&nbsp;4.5:1</span>
+              </label>
+            </li>
+
+            <li>
+              <label class="chip">
+                <input type="checkbox" class="chip__input" id="filter-aaa" checked>
+                <span class="chip__box">
+                  <span class="chip__checkmark"></span>
+                </span>
+                <span class="chip__label">AAA</span>
+                <span class="chip__score">≥&nbsp;7:1</span>
+              </label>
+            </li>
+
+          </ul>
+        </div>
+
+        <!-- Contrast matrix table — rebuilt by app.js whenever palette changes -->
+        <div id="matrix-container"></div>
+
+      </article>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

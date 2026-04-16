@@ -1,0 +1,176 @@
+/* ============================================================
+   Elly's Color Playground — Design Tokens
+   All CSS custom properties. Import this file first.
+   ============================================================ */
+
+/* ── Solway (headings) from Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Solway:wght@400;500;700&display=swap');
+
+/* ── Montsera11y (body/UI) from local font files ── */
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montsera11y';
+  src: url('fonts/Montsera11y-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================================================
+   Custom Properties
+   ============================================================ */
+
+:root {
+
+  /* ── Primitive Colors ── */
+
+  /* Neutrals */
+  --color-neutrals-100:    #FEFEFE;
+  --color-neutrals-200:    #FAFAFA;
+  --color-neutrals-300:    #CDCED1;
+  --color-neutrals-300-40: rgba(205, 206, 209, 0.4);
+  --color-neutrals-600:    #6F7177;
+  --color-neutrals-700:    #434751;
+  --color-neutrals-900:    #1A1A1C;
+
+  /* Brand */
+  --color-brand-100: #EBFBFF;
+  --color-brand-500: #00799E;
+  --color-brand-900: #034656;
+
+  /* Accent */
+  --color-accent-100: #BBF6E2;
+
+  /* Functional */
+  --color-functional-yellow-100: #FFEEE0;
+  --color-functional-yellow-900: #B54800;
+  --color-functional-red-100:    #FFF0F0;
+  --color-functional-red-900:    #D60F0F;
+
+  /* ── Semantic Tokens ── */
+
+  /* Background */
+  --color-bg-default: var(--color-neutrals-200);
+  --color-bg-surface: var(--color-neutrals-100);
+
+  /* Border */
+  --color-border-default: var(--color-neutrals-300-40);
+
+  /* Text */
+  --color-text-light:   var(--color-neutrals-600);
+  --color-text-primary: var(--color-neutrals-700);
+  --color-text-dark:    var(--color-neutrals-900);
+
+  /* Accent */
+  --color-accent-mint: var(--color-accent-100);
+
+  /* Primary button */
+  --color-primary-button-fill:          var(--color-brand-500);
+  --color-primary-button-text:          var(--color-neutrals-100);
+  --color-primary-button-hover-fill:    var(--color-brand-900);
+  --color-primary-button-disabled-fill: var(--color-neutrals-600);
+
+  /* Secondary button */
+  --color-secondary-button-fill:          var(--color-neutrals-100);
+  --color-secondary-button-text:          var(--color-neutrals-700);
+  --color-secondary-button-border:        var(--color-neutrals-300);
+  --color-secondary-button-hover-fill:    var(--color-neutrals-200);
+  --color-secondary-button-hover-border:  var(--color-brand-500);
+  --color-secondary-button-disabled-fill: var(--color-neutrals-200);
+  --color-secondary-button-disabled-text: var(--color-neutrals-600);
+
+  /* Checkboxes */
+  --color-checkbox-fill-unchecked:   var(--color-neutrals-200);
+  --color-checkbox-fill-checked:     var(--color-brand-500);
+  --color-checkbox-icon-checked:     var(--color-neutrals-100);
+  --color-checkbox-border-unchecked: var(--color-neutrals-700);
+
+  /* Status (contrast matrix cells) */
+  --color-status-pass:       var(--color-neutrals-100);
+  --color-status-pass-fg:    var(--color-neutrals-700);
+  --color-status-warning:    var(--color-functional-yellow-100);
+  --color-status-warning-fg: var(--color-functional-yellow-900);
+  --color-status-fail:       var(--color-functional-red-100);
+  --color-status-fail-fg:    var(--color-functional-red-900);
+
+  /* ── Typography ── */
+
+  /* Font families */
+  --font-heading: 'Solway', serif;
+  --font-body:    'Montsera11y', sans-serif;
+
+  /* Font size scale */
+  --font-size-xs:   12px;
+  --font-size-sm:   14px;
+  --font-size-base: 16px;
+  --font-size-lg:   18px;
+  --font-size-xl:   22px;
+  --font-size-2xl:  28px;
+
+  /* Line heights */
+  --line-height-tight:   120%;
+  --line-height-snug:    135%;
+  --line-height-base:    150%;
+  --line-height-relaxed: 170%;
+
+  /* Letter spacing */
+  --letter-spacing-tight:  -0.01em;
+  --letter-spacing-normal:  0;
+  --letter-spacing-wide:    0.04em;
+  --letter-spacing-wider:   0.06em;
+}
