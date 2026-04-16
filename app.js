@@ -746,6 +746,16 @@ function handleExport() {
   announce('Palette exported as palette.json');
 }
 
+// ── New palette ──
+function handleNewPalette() {
+  state.palette              = [];
+  state.selectedId           = null;
+  state.editingId            = null;
+  state.activeSavedPaletteId = null;
+  renderAll();
+  announce('New palette started');
+}
+
 // ── Save palette ──
 function handleSavePalette() {
   if (state.palette.length === 0) {
@@ -1002,10 +1012,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (copyBtn) copyBtn.addEventListener('click', handleCopyHex);
 
   /* ── Header actions ── */
-  const exportBtn = document.getElementById('export-btn');
-  const saveBtn   = document.getElementById('save-btn');
-  if (exportBtn) exportBtn.addEventListener('click', handleExport);
-  if (saveBtn)   saveBtn.addEventListener('click', handleSavePalette);
+  const exportBtn    = document.getElementById('export-btn');
+  const saveBtn      = document.getElementById('save-btn');
+  const newPaletteBtn = document.getElementById('new-palette-btn');
+  if (exportBtn)     exportBtn.addEventListener('click', handleExport);
+  if (saveBtn)       saveBtn.addEventListener('click', handleSavePalette);
+  if (newPaletteBtn) newPaletteBtn.addEventListener('click', handleNewPalette);
 
   /* ── Color picker button — keyboard support ── */
   const pickerBtn = document.querySelector('.color-picker-btn');
